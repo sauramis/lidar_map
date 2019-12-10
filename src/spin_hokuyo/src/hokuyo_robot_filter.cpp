@@ -12,42 +12,7 @@ ros::Publisher pub;
 
 //removes points that correspond to robot by setting them equal to infinity
 void filter(const sensor_msgs::LaserScan msg)
-{  /*
-   sensor_msgs::LaserScan aux; //create new LaserScan msg for filtered points
-
-   //transfer values of original scan unrelated to seeing the robot
-   aux.header = msg.header;
-   aux.angle_min = msg.angle_min;
-   aux.angle_max = msg.angle_max;
-   aux.angle_increment = msg.angle_increment;
-   aux.scan_time = msg.scan_time;
-   aux.range_min = 0;
-   aux.range_max = inf;
-   aux.intensities[920];
-
-   //initialize the ranges array to the 920 values needed
-   aux.ranges.resize(920);
-
-   //checks each ranges[] 0 -> 920 to see if it is the robot
-   //robot is defined as distances < 0.5 m
-   
-   for(int n = 0; n < 921; n++)
-   {
-      if (msg.ranges[n] > 0.5)
-      { 
-         //directly transfer ranges[] value if not robot
-         aux.ranges[n] = msg.ranges[n];
-      }
- 
-      else
-      {
-         //set ranges[] to inf to "remove" point if it is the robot
-         aux.ranges[n] = inf;
-      }
-   }
-   
-   //publish filtered cloud
-   */
+{
    pub.publish(msg);
 }
 
