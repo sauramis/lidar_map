@@ -63,7 +63,9 @@ ros::Time end;
 ros::Time init;
 int go = 0;
 std::string assembled_cloud_mode;
-double scan_time;
+double map_update_time;
+ros::Publisher pub_;
+ros::ServiceClient client_;
 
 //call back for start time, saves in global variable
 void startTime(const std_msgs::Time &msg) {
@@ -76,6 +78,16 @@ void endTime(const std_msgs::Time &msg) {
     go = 1;
 }
 
+void compile_point_cloud(sensor_msgs::PointCloud2 cloud){
+    AssembleScans2 srv;
+    srv.request.begin = ros::Time::now()-ros::Duration(map_update_time);
+    srv.request.end = ros::Time::now();
+    if(client_.call(srv))
+       pub_.publish(srv.response.cloud);    
+}
+
+
+/*
 //compilation class created by combine_clouds with modifications to remove timer and work with motor times
 class PeriodicSnapshotter {
 
@@ -160,8 +172,8 @@ class PeriodicSnapshotter {
     ros::Timer timer_;
     bool first_time_;
 } ;
+*/
 
-//main
 int main(int argc, char **argv)
 {
     //initialize and wait for necessary services, etc.
@@ -169,58 +181,24 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     //ROS_INFO("Waiting for [build_cloud] to be advertised");
     
-    //parameter for timer vs. subscriber and length of timer
-    n.param<std::string>("assembled_cloud_mode", assembled_cloud_mode, "subscriber");
-    n.param<double>("scan_time", scan_time, 5);
-
+    n.param<double>("map_update_time", map_update_time, 5);
+    pub_ = n.advertise<sensor_msgs::PointCloud2> ("assembled_cloud", 1);
+    client_ = n.serviceClient<AssembleScans2>("assemble_scans2");
     //Wait for build cloud service to init
     ros::service::waitForService("build_cloud");
-    //ROS_INFO_STREAM("Found build_cloud! Starting the Cloud Compiler");
 
     //SUBSCRIBER intialization
-    if (assembled_cloud_mode == "subscriber")
-    {
-        //Wait for dynamixel servo to init by waiting for /state topic
-        ros::topic::waitForMessage<dynamixel_msgs::JointState>("/tilt_controller/state", ros::Duration(20));   
-        
-        //subscribes to start and end time published by tilting motor
-        ros::Subscriber sub_1=n.subscribe("/time/start_time", 1, &startTime);
-        ros::Subscriber sub_2=n.subscribe("/time/end_time", 1, &endTime);
-    }
-
-    PeriodicSnapshotter snapshotter;
+    //Wait for dynamixel servo to init by waiting for /state topic
+    ros::topic::waitForMessage<dynamixel_msgs::JointState>("/tilt_controller/state", ros::Duration(20));   
+    //subscribes to start and end time published by tilting motor
+    ros::Subscriber sub_1=n.subscribe("/time/start_time", 1, &startTime);
+    ros::Subscriber sub_2=n.subscribe("/time/end_time", 1, &endTime);
+    ros::Subscriber sub_3=n.subscribe("/hokuyo_points", 1, &compile_point_cloud);
     init = ros::Time::now();
-    
     //SUBSCRIBER MAIN LOOP
-    if (assembled_cloud_mode == "subscriber")
+    while(ros::ok())
     {
-        while(ros::ok())
-        {
-            //when an end time comes in (which only occurs after start time is updated) run the compiler
-            if(go==1)
-            {
-                snapshotter.compile();
-                go = 0;
-            }
-
-            //wait for messages when not compiling
-            else
-            {
-                ros::spinOnce();
-            }
-  
-        //pause to save computing power
-        ros::Duration(0.01).sleep();
-        }
+    	ros::spinOnce();
     }
-
-    //TIMER main loop
-    else if (assembled_cloud_mode == "time")
-    {
-        //wait for timer to begin service call
-        ros::spin();
-    }
-
-return 0;
-
+    return 0;
 }

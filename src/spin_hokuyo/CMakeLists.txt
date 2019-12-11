@@ -39,9 +39,6 @@ target_link_libraries(hokuyo_robot_filter ${catkin_LIBRARIES})
 add_executable(commander tutorials/node/commander.cpp)
 target_link_libraries(commander ${catkin_LIBRARIES})
 
-add_executable(simple_cpp_client src/simple_cpp_client.cpp)
-target_link_libraries(simple_cpp_client ${catkin_LIBRARIES})
-
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
