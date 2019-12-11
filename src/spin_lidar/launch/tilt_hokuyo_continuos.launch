@@ -58,12 +58,12 @@
       output="screen"
  />
   
- <node
+ <!--node
     name="hokuyo_robot_filter"
     pkg="spin_lidar"
     type="hokuyo_robot_filter"
     output="screen"
-  />
+  /-->
 
   <node
     name="scan_to_pcl"
