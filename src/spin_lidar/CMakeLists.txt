@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(spin_hokuyo)
+project(spin_lidar)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} -O3")
 
@@ -38,6 +38,7 @@ target_link_libraries(hokuyo_robot_filter ${catkin_LIBRARIES})
 
 add_executable(commander tutorials/node/commander.cpp)
 target_link_libraries(commander ${catkin_LIBRARIES})
+
 
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

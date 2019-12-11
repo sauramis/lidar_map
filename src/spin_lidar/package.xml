@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>spin_hokuyo</name>
+  <name>spin_lidar</name>
   <version>1.0.0</version>
   <description>
     This package enables a 2D Hokuyo laser, connected to a Dynamixel servo motor, to produce a 3D point cloud that can
@@ -29,7 +29,8 @@
   <build_depend>hokuyo_node</build_depend>
   <build_depend>dynamixel_controllers</build_depend>
   <build_depend>laser_assembler</build_depend>
-
+  <build_depend>octomap</build_depend>
+  <run_depend>octomap</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>actionlib</run_depend>
   <run_depend>std_msgs</run_depend>

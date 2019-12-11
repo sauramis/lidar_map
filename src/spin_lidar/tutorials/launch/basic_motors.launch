@@ -23,7 +23,7 @@ servo to rotate to.  The Hokuyo IS NOT part of this launch. -->
    </node>
 
    <rosparam
-      file="$(find spin_hokuyo)/tutorials/launch/dynamixel_servos.yaml"
+      file="$(find spin_lidar)/tutorials/launch/dynamixel_servos.yaml"
       command="load"
     />
 
@@ -40,7 +40,7 @@ servo to rotate to.  The Hokuyo IS NOT part of this launch. -->
 
   <node
     name="commander"
-    pkg="spin_hokuyo"
+    pkg="spin_lidar"
     type="commander"
     output="screen"
    />
