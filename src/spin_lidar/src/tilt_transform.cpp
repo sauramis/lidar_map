@@ -1,42 +1,25 @@
-#include<tf/transform_broadcaster.h>
-#include<ros/ros.h>
-#include<cmath>
-#include "dynamixel_msgs/JointState.h"
+#include <ros/ros.h>
+#include <tf/transform_listener.h>
 
-/* This node publishes the tf between the laser scan and the servo.  This is based on the angle published by the servo. */
+int main(int argc, char** argv){
+  ros::init(argc, argv, "ouster_tf_listener");
+  ros::NodeHandle node;
+  ros::Publisher final_transformed_pc = 
+    node.advertise<sensor_msgs::PointCLoud2>("transformed_point_cloud", 1);
 
-//Module that applies transform to laser scan of tilting hokuyo laser
-using namespace std;
+  tf::TransformListener listener;
+  while (node.ok()){
+    tf::StampedTransform transform;
+    try{
+      listener.lookupTransform("/ouster", "/laser",ros::Time(0), transform);
+    }
+    catch (tf::TransformException ex){
+      ROS_ERROR("%s",ex.what());
+      ros::Duration(1.0).sleep();
+    }
+    
+    final_transformed_pc.publish(vel_msg);
 
-//global variables
-float pos;
-
-//Recieves position values from dynamixel servo and uses angle to apply transform to laser scan
-void obtainValues(const dynamixel_msgs::JointState &msg) 
-{
-    //gets position from message
-    pos = msg.current_pos + M_PI/2;
-    // ROS_INFO("The current position is : %f\n", pos); 
-    //perform transform
-    static tf::TransformBroadcaster br;
-    tf::Transform transform;
-    transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
-    tf::Quaternion q;
-    q.setRPY(pos, 0, 0);
-    transform.setRotation(q);
-    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "servo", "laser"));
-}
-
-//main
-int main(int argc, char **argv) 
-{
-    //initialize
-    ros::init(argc, argv, "tilt_transform");
-    ros::NodeHandle nh;
-  
-    //subscirber to current position
-    ros::Subscriber position_sub = nh.subscribe("/tilt_controller/state", 5, &obtainValues);
-
-    //wait for updates in position
-    ros::spin();
-}
+    rate.sleep();
+  }
+  return 0;
