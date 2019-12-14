@@ -49,7 +49,7 @@
     output="screen"
   />
   
-  <include file="$(find rplidar_ros)/launch/rplidar_s1.launch" />
+  <include file="$(find rplidar_ros)/launch/rplidar.launch" />
 
   <node
     name="scan_to_pcl"
@@ -58,7 +58,6 @@
   />
 
     <param name="assembled_cloud_mode" type="string" value="subscriber" />
-    <param name="map_update_time" type="double" value="13" />
     <arg name="assemble" default="velodyne_points"/> 
 
   <node type="point_cloud2_assembler" pkg="laser_assembler"  name="pcl_assembler_server">

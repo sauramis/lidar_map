@@ -5,6 +5,8 @@ echo "rplidar usb connection as /dev/rplidar , check it using the command : ls -
 echo "start copy rplidar.rules to  /etc/udev/rules.d/"
 echo "`rospack find rplidar_ros`/scripts/rplidar.rules"
 sudo cp `rospack find rplidar_ros`/scripts/rplidar.rules  /etc/udev/rules.d
+echo "`rospack find rplidar_ros`/scripts/99-dynamixel-workbench-cdc.rules"
+sudo cp `rospack find rplidar_ros`/scripts/99-dynamixel-workbench-cdc.rules  /etc/udev/rules.d
 echo " "
 echo "Restarting udev"
 echo ""

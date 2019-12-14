@@ -36,7 +36,7 @@
 #include "sensor_msgs/LaserScan.h"
 #include "std_srvs/Empty.h"
 #include "rplidar.h"
-
+#include "rplidar_ros/StartMotor.h"
 #ifndef _countof
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
 #endif
@@ -163,7 +163,7 @@ bool stop_motor(std_srvs::Empty::Request &req,
   return true;
 }
 
-bool start_motor(std_srvs::Empty::Request &req,
+/*bool start_motor(std_srvs::Empty::Request &req,
                                std_srvs::Empty::Response &res)
 {
   if(!drv)
@@ -172,7 +172,22 @@ bool start_motor(std_srvs::Empty::Request &req,
   drv->startMotor();
   drv->startScan(0,1);
   return true;
+}*/
+
+bool start_motor(rplidar_ros::StartMotor::Request &req,
+                               rplidar_ros::StartMotor::Response &res)
+{
+    if(!drv)
+       return false;
+    
+    ROS_DEBUG("Start motor (%d)", req.pwm.data);
+    drv->startMotor(req.pwm.data);
+    drv->startScan(0,1);
+    return true;
 }
+
+
+
 
 static float getAngle(const rplidar_response_measurement_node_hq_t& node)
 {
@@ -192,6 +207,7 @@ int main(int argc, char * argv[]) {
     bool angle_compensate = true;
     float max_distance = 8.0;
     int angle_compensate_multiple = 1;//it stand of angle compensate at per 1 degree
+    int motor_pwm;
     std::string scan_mode;
     ros::NodeHandle nh;
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
@@ -205,7 +221,7 @@ int main(int argc, char * argv[]) {
     nh_private.param<bool>("inverted", inverted, false);
     nh_private.param<bool>("angle_compensate", angle_compensate, false);
     nh_private.param<std::string>("scan_mode", scan_mode, std::string());
-
+    nh_private.param<int>("motor_pwm", motor_pwm, DEFAULT_MOTOR_PWM);
     ROS_INFO("RPLIDAR running on ROS package rplidar_ros. SDK Version:"RPLIDAR_SDK_VERSION"");
 
     u_result     op_result;
@@ -257,7 +273,7 @@ int main(int argc, char * argv[]) {
     ros::ServiceServer stop_motor_service = nh.advertiseService("stop_motor", stop_motor);
     ros::ServiceServer start_motor_service = nh.advertiseService("start_motor", start_motor);
 
-    drv->startMotor();
+    drv->startMotor(motor_pwm);
 
     RplidarScanMode current_scan_mode;
     if (scan_mode.empty()) {

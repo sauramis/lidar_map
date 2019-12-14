@@ -58,10 +58,14 @@ to the compilation service to put all of the point clouds together.  One cloud i
 using namespace laser_assembler;
 
 //global variables
+ros::Time first_start;
 ros::Time start;
+ros::Time first_end;
 ros::Time end;
+ros::Time map_refresh_time;
 ros::Time init;
-int go = 0;
+bool first_start_msg=true;
+bool first_end_msg=true;
 std::string assembled_cloud_mode;
 double map_update_time;
 ros::Publisher pub_;
@@ -69,110 +73,30 @@ ros::ServiceClient client_;
 
 //call back for start time, saves in global variable
 void startTime(const std_msgs::Time &msg) {
-    start = msg.data;
+	start = msg.data;
+	if(first_start_msg){
+		first_start = start;
+		first_start_msg=false;
+	}
 }
 
 //callback for end time, saves in global variable and updates go to start compilation
 void endTime(const std_msgs::Time &msg) {
-    end = msg.data;
-    go = 1;
+        end = msg.data;
+	if(first_end_msg){
+		first_end = end;
+		first_end_msg=false;
+	}
 }
 
 void compile_point_cloud(sensor_msgs::PointCloud2 cloud){
     AssembleScans2 srv;
-    srv.request.begin = ros::Time::now()-ros::Duration(map_update_time);
+    srv.request.begin = ros::Time::now()-(first_end-first_start);
     srv.request.end = ros::Time::now();
     if(client_.call(srv))
        pub_.publish(srv.response.cloud);    
 }
 
-
-/*
-//compilation class created by combine_clouds with modifications to remove timer and work with motor times
-class PeriodicSnapshotter {
-
-    public:
-
-    PeriodicSnapshotter() {
-        // Create a publisher for the clouds that we assemble
-        pub_ = n_.advertise<sensor_msgs::PointCloud2> ("assembled_cloud", 1);
-
-        // Create the service client for calling the assembler
-        client_ = n_.serviceClient<AssembleScans2>("assemble_scans2");
-
-        // Start the timer that will trigger the processing loop (timerCallback)
-        timer_ = n_.createTimer(ros::Duration(scan_time), &PeriodicSnapshotter::timerCallback, this);
-
-        // Need to track if we've called the timerCallback at least once
-        first_time_ = true;
-    }
-
-    void compile() {
-        // Populate our service request based on motor times
-        AssembleScans2 srv;
-        srv.request.begin = start;
-        srv.request.end   = end;
-
-        // Make the service call
-        if (client_.call(srv)) {
-            //ROS_INFO_STREAM("Published Cloud") ;
-            pub_.publish(srv.response.cloud);
-        }
-        else {
-            //ROS_ERROR("Error making service call\n") ;
-        } 
-    }
-
-    void timerCallback(const ros::TimerEvent& e) {
-    // We don't want to build a cloud the first callback, since we we
-    //   don't have a start and end time yet
-        if (first_time_) {
-            first_time_ = false;
-
-        // Populate our service request based on our timer callback times
-        AssembleScans2 srv;
-        srv.request.begin = init;
-        srv.request.end   = e.current_real;
-
-        // Make the service call
-        if (client_.call(srv)) {
-            //ROS_INFO("Published Cloud");
-            pub_.publish(srv.response.cloud);
-        }
-
-        else {
-            //ROS_ERROR("Error making service call\n") ;
-        }
-
-            return;
-        }
-
-        // Populate our service request based on our timer callback times
-        AssembleScans2 srv;
-        srv.request.begin = e.last_real;
-        srv.request.end   = e.current_real;
-
-        // Make the service call
-        if (client_.call(srv)) {
-            //ROS_INFO("Published Cloud") ;
-            pub_.publish(srv.response.cloud);
-        }  
-
-        else {
-            //ROS_ERROR("Error making service call\n") ;
-        }
-
-        //ROS_ERROR_STREAM(scan_time);
-    }
-
-    private:
-    ros::NodeHandle n_;
-    ros::Publisher pub_;
-    ros::ServiceClient client_;
-    ros::Timer timer_;
-    bool first_time_;
-} ;
-*/
 
 int main(int argc, char **argv)
 {
