@@ -1,8 +1,9 @@
-## Create a 3D point cloud using a 2D-lidar:
+# Create a 3D point cloud using a 2D-lidar:
 This repository is primarily using spin_hokuyo to run a hokuyo lidar with a dynamixel and generating a 3D pointcloud pubblished to /assembled_cloud topic.
-To build the repository clone the repository into a catkin workspace, replace the src folder and run
+
+## To build the repository clone the repository into a catkin workspace, replace the src folder and run
     ./build_workspace
-To add the udev rules to run rplidar/hokuyo and dynamixel run
+## To add the udev rules to run rplidar/hokuyo and dynamixel run
     ./create_udev_rules
 ## To run a hokuyo use:
     roslaunch spin_lidar tilt_hokuyo_continous
