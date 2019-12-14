@@ -1,4 +1,5 @@
 # This file is the original configuration for spin_hokuyuo
+# working values: init: 1024, min: 0, max: 2048
 
 tilt_controller:
     controller:
@@ -9,8 +10,15 @@ tilt_controller:
     joint_speed: 1.0    
     motor:
         id: 2
-        init: 1024
-        min: 0
-        max: 2048
+        init: 3072
+        min: 2048
+        max: 4095 
 
-
+        # LEGEND FOR MX-28T (WHEN MOUNTED RIGHT SIDE UP)
+        # LEFT: 0
+        # BOTTOM: 1024
+        # RIGHT: 2048
+        # TOP: 3072
+        # LEFT: 4095
+        # INIT --> MIN --> MAX --> MIN --> MAX ...
+        # INIT MUST BE BETWEEN MIN AND MAX

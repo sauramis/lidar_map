@@ -22,7 +22,7 @@ void obtainValues(const dynamixel_msgs::JointState &msg)
     tf::Transform transform;
     transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
     tf::Quaternion q;
-    q.setRPY(pos, 0, M_PI);
+    q.setRPY(pos, 0, M_PI); // Added M_PI in yaw, because RPLIDAR is pointed backwards (the arrow is pointing forward)
     transform.setRotation(q);
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "servo", "laser"));
 }

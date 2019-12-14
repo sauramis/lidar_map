@@ -2,11 +2,9 @@
 
 echo "remap the device serial port(ttyUSBX) to  rplidar"
 echo "rplidar usb connection as /dev/rplidar , check it using the command : ls -l /dev|grep ttyUSB"
-echo "start copy rplidar.rules to  /etc/udev/rules.d/"
-echo "`rospack find rplidar_ros`/scripts/rplidar.rules"
-sudo cp `rospack find rplidar_ros`/scripts/rplidar.rules  /etc/udev/rules.d
-echo "`rospack find rplidar_ros`/scripts/99-dynamixel-workbench-cdc.rules"
-sudo cp `rospack find rplidar_ros`/scripts/99-dynamixel-workbench-cdc.rules  /etc/udev/rules.d
+echo "start copy rplidar.rules and 99-dynamixel-workbench-cdc.rules to  /etc/udev/rules.d/"
+sudo cp rplidar.rules /etc/udev/rules.d
+sudo cp 99-dynamixel-workbench-cdc.rules /etc/udev/rules.d
 echo " "
 echo "Restarting udev"
 echo ""
