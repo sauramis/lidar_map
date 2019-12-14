@@ -18,6 +18,9 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
+add_executable(tilt_motor src/tilt_motor_single_sweep_continuous.cpp)
+target_link_libraries(tilt_motor ${catkin_LIBRARIES})
+
 add_executable(tilt_transform src/tilt_transform.cpp)
 target_link_libraries(tilt_transform ${catkin_LIBRARIES})
 
