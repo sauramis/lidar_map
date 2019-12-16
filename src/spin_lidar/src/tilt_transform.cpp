@@ -15,7 +15,7 @@ float pos;
 void obtainValues(const dynamixel_msgs::JointState &msg) 
 {
     //gets position from message
-    pos = msg.current_pos;
+    pos = M_PI-msg.current_pos;
     // ROS_INFO("The current position is : %f\n", pos); 
     //perform transform
     static tf::TransformBroadcaster br;

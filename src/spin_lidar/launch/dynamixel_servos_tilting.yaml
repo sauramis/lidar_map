@@ -1,18 +1,18 @@
 # This file is the original configuration for spin_hokuyuo
 # working values: init: 1024, min: 0, max: 2048
-
+# values : 3072 2048 4095 
 tilt_controller:
     controller:
         package: dynamixel_controllers
         module: joint_position_controller
         type: JointPositionController
     joint_name: tilt_joint
-    joint_speed: 1.0    
+    joint_speed: 0.5    
     motor:
         id: 2
         init: 3072
         min: 2048
-        max: 4095 
+        max: 4095
 
         # LEGEND FOR MX-28T (WHEN MOUNTED RIGHT SIDE UP)
         # LEFT: 0

@@ -17,6 +17,7 @@ using namespace std;
 float error;
 int max_angle;
 int min_angle;
+int init;
 float pause_time;
 
 //obtains error from dynamixel message
@@ -59,6 +60,7 @@ void Dynamixel::moveMotor(double position) {
     std_msgs::Float64 aux;
     aux.data = convert;
     pub_1.publish(aux);
+    std::cout << "Motors destination is: " << position << " in integer and: " << convert <<" in radians" << "\n";
     ROS_INFO_STREAM(aux);
 }
 
@@ -89,8 +91,7 @@ void Dynamixel::endTime() {
 //initilazies motor to min angle
 void initialize(){
     Dynamixel motor_1;  //Creates class object only used in the single instance that this function is run
-
-    motor_1.moveMotor(min_angle);
+    motor_1.moveMotor(init);
     ros::Duration(pause_time).sleep();
     motor_1.checkError();
     ros::Duration(pause_time).sleep();
@@ -112,7 +113,6 @@ void sweep()
     motor.checkError();
     motor.endTime();
     ros::Duration(pause_time).sleep();
-    ROS_INFO("Finished One Sweep!");
 }
 
 //main
@@ -131,6 +131,7 @@ int main(int argc, char **argv) {
     //establish parameters
     nh.param("maximum", max, 92);
     nh.param("minimum", min, -92);
+    nh.param("init", init, 0);
     nh.param("pause", pause, 0.1);
 
     //transfer parameters to global variables
@@ -146,7 +147,7 @@ int main(int argc, char **argv) {
     initialize();    
 
     //continuously perform sweeps
-    while(ros::ok()) {
+    while(ros::ok()) {	
         sweep();
     }
 }
